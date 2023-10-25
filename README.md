@@ -1,4 +1,5 @@
-# In this repository, I've set up a Kubernetes cluster on AWS with Terraform. There's also a Python app where the frontend talks to a backend using Flask, all managed through Nginx. I've used GitHub Actions for deploying the app and checking the code's quality. Plus, with ArgoCD, I've streamlined the app's deployment and added monitoring using Prometheus and Grafana.
+# Summary 
+In this repository, I've set up a Kubernetes cluster on AWS with Terraform. There's also a Python app where the frontend talks to a backend using Flask, all managed through Nginx. I've used GitHub Actions for deploying the app and checking the code's quality. Plus, with ArgoCD, I've streamlined the app's deployment and added monitoring using Prometheus and Grafana.
 
 
 # Table of Contents
