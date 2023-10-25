@@ -1,0 +1,8 @@
+backend:
+  image: "xblis11/kube:backend-latest"
+frontend:
+  image: "xblis11/kube:frontend-latest"
+  nodePort: 30080
+mongo:
+  image: "mongo"
+  tag: "4.4"
