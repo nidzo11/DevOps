@@ -39,6 +39,16 @@ variable "private_key_file" {
   default     = "C:\\pair\\accesspair.pem"
 }
 
+variable "master_script_file" {
+  description = "The path to the master.sh script."
+  default     = "C:\\Mywork\\DevOps\\terraform\\scripts\\master.sh"
+}
+
+variable "worker_script_file" {
+  description = "The path to the worker.sh script."
+  default     = "C:\\Mywork\\DevOps\\terraform\\scripts\\worker.sh"
+}
+
 
 variable "kube_node_count" {
   description = "The number of kube_node instances to create."

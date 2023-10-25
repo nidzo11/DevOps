@@ -1190,7 +1190,8 @@ alertmanager:
   enabled: true
 
   persistence:
-    size: 2Gi
+    enabled: false
+    
 
   podSecurityContext:
     runAsUser: 65534

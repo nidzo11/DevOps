@@ -240,7 +240,7 @@ resource "null_resource" "kube_master_provisioner" {
   }
 
   provisioner "file" {
-    source      = "C:\\DevOps\\DevOps\\terraform\\scripts\\master.sh"
+    source      = var.master_script_file
     destination = "/tmp/master.sh"
   }
 
@@ -295,7 +295,7 @@ resource "null_resource" "kube_node_provisioner" {
   }
 
   provisioner "file" {
-    source      = "C:\\DevOps\\DevOps\\terraform\\scripts\\worker.sh"
+    source      = var.worker_script_file
     destination = "/tmp/worker.sh"
   }
 
