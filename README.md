@@ -33,7 +33,6 @@ The Terraform script performs the following:
 
 - **Scalability**: Choose how many worker nodes you want in your cluster.
 - **Automated Cluster Joining**: Worker nodes automatically join the Kubernetes cluster upon creation.
-- **Security**: Proper security group configurations to ensure the safety of your cluster while still being accessible.
   
 ## How to Use
 
