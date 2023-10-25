@@ -89,6 +89,8 @@ server:
   ## Prometheus server container name
   ##
   name: server
+  persistence:
+    enabled: false
 
   ## Use a ClusterRole (and ClusterRoleBinding)
   ## - If set to false - we define a RoleBinding in the defined namespaces ONLY
