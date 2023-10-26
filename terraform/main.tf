@@ -311,3 +311,14 @@ resource "null_resource" "kube_node_provisioner" {
 resource "aws_iam_instance_profile" "ec2_profile" {
   role = aws_iam_role.ec2_role.name
 }
+
+output "kube_master_public_ip" {
+  value = aws_instance.kube_master.public_ip
+  description = "Public IP of the KubeMaster EC2 instance"
+}
+
+output "kube_node_public_ips" {
+  value = aws_instance.kube_node.*.public_ip
+  description = "Public IPs of the KubeNode EC2 instances"
+}
+

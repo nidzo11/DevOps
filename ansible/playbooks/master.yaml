@@ -1,0 +1,126 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+  - name: Update package list and upgrade
+    apt:
+      update_cache: yes
+      upgrade: yes
+
+  - name: Install Docker and its dependencies
+    apt:
+      name:
+        - docker.io
+        - apt-transport-https
+        - curl
+      state: present
+
+  - name: Start Docker service
+    service:
+      name: docker
+      state: started
+      enabled: yes
+
+  - name: Add ubuntu user to docker group
+    user:
+      name: ubuntu
+      groups: docker
+      append: yes
+
+  - name: Add Kubernetes APT key and repository
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+    block:
+    - apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+
+  - name: Install Kubernetes tools
+    apt:
+      update_cache: yes
+      name:
+        - kubelet
+        - kubeadm
+        - kubectl
+      state: present
+
+  - name: Disable swap
+    command: swapoff -a
+
+  - name: Load necessary kernel modules for Kubernetes
+    modprobe:
+      name: "{{ item }}"
+      state: present
+    loop:
+      - overlay
+      - br_netfilter
+
+  - name: Update sysctl settings for Kubernetes
+    sysctl:
+      name: "{{ item.name }}"
+      value: "{{ item.value }}"
+      state: present
+      sysctl_set: yes
+      reload: yes
+    loop:
+      - { name: 'net.bridge.bridge-nf-call-ip6tables', value: '1' }
+      - { name: 'net.bridge.bridge-nf-call-iptables', value: '1' }
+      - { name: 'net.ipv4.ip_forward', value: '1' }
+
+  - name: Initialize Kubernetes cluster
+    command:
+      cmd: kubeadm init
+      creates: /etc/kubernetes/admin.conf
+    register: kubeadm_output
+    changed_when: "'kubeadm join' in kubeadm_output.stdout"
+
+  - name: Extract the last two lines
+    set_fact:
+      last_two_lines: "{{ kubeadm_output.stdout_lines[-2:] }}"
+
+  - name: Save the last two lines to a local file
+    copy:
+      content: "{{ last_two_lines | join('\n') }}"
+      dest: "/path/to/local/directory/kubejoin.sh"
+    delegate_to: localhost
+
+
+  - name: Setup kubeconfig for ubuntu user
+    block:
+    - file:
+        path: "{{ ansible_env.HOME }}/.kube"
+        state: directory
+    - copy:
+        src: /etc/kubernetes/admin.conf
+        dest: "{{ ansible_env.HOME }}/.kube/config"
+        owner: ubuntu
+        group: ubuntu
+        mode: '0644'
+
+  - name: Download Calico manifest
+    get_url:
+      url: https://raw.githubusercontent.com/projectcalico/calico/v3.26.3/manifests/calico.yaml
+      dest: /tmp/calico.yaml
+
+  - name: Apply Calico manifest
+    command: kubectl apply -f /tmp/calico.yaml
+
+  - name: Download helm script
+    get_url:
+      url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+      dest: /tmp/get_helm.sh
+      mode: '0700'
+
+  - name: Install Helm
+    command: /tmp/get_helm.sh
+
+  - name: Install git
+    apt:
+      name: git
+      state: present
+
+  - name: Clone DevOps repository
+    git:
+      repo: 'https://github.com/nidzo11/DevOps.git'
+      dest: '/home/ubuntu/DevOps'

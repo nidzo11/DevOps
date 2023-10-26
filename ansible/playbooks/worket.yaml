@@ -1,0 +1,64 @@
+---
+- name: Set up Kubernetes Node
+  hosts: all
+  become: yes
+
+  tasks:
+    - name: Update and upgrade packages
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add the ubuntu user to the docker group
+      user:
+        name: ubuntu
+        groups: docker
+        append: yes
+
+    - name: Install required packages for Kubernetes
+      apt:
+        name:
+          - apt-transport-https
+          - curl
+        state: present
+
+    - name: Add Kubernetes apt-key
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: Add Kubernetes apt repository
+      apt_repository:
+        repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+        state: present
+
+    - name: Install kubelet, kubeadm, and kubectl
+      apt:
+        name:
+          - kubelet
+          - kubeadm
+          - kubectl
+        state: present
+
+    - name: Disable swap
+      command: swapoff -a
+
+    - name: Copy kubejoin.sh to the remote machine
+      copy:
+        src: "/path/on/controller/kubejoin.sh"
+        dest: "/home/ubuntu/kubejoin.sh"
+        mode: '0775' 
+
+    - name: Execute kubejoin.sh on the remote machine
+      command: /path/on/remote/kubejoin.sh
