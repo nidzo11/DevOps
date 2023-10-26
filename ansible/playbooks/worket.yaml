@@ -1,6 +1,6 @@
 ---
 - name: Set up Kubernetes Node
-  hosts: all
+  hosts: "KubeNode-*"
   become: yes
 
   tasks:

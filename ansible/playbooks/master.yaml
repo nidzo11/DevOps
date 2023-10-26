@@ -1,5 +1,5 @@
 ---
-- hosts: all
+- hosts: KubeMaster
   become: yes
   tasks:
   - name: Update package list and upgrade

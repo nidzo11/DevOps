@@ -1,0 +1,9 @@
+plugin: aws_ec2
+regions:
+  - eu-north-1
+filters:
+  instance-state-name: running
+  tag:Name: "KubeMaster"
+  tag:Name: "KubeNode-*"
+keyed_groups:
+  - key: tags.Name
